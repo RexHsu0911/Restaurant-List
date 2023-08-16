@@ -8,6 +8,8 @@ const { engine } = require('express-handlebars')
 const app = express()
 // 指定 port
 const port = 3000
+// 載入 restaurants.json
+const restaurants = require('./public/jsons/restaurant.json').results
 
 // 把樣板引擎交給 express-handlebars，名稱為參數 .hbs
 app.engine('.hbs', engine({ extname: '.hbs' }));
@@ -24,8 +26,9 @@ app.get('/', (req, res) => {
 })
 
 // res.send('listing movies') 改成 res.render('index')
+// 傳入 restaurants
 app.get('/restaurants', (req, res) => {
-  res.render('index')
+  res.render('index', { restaurants })
 })
 
 // 使用 params 做動態路由
