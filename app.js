@@ -25,16 +25,32 @@ app.get('/', (req, res) => {
   res.redirect('/restaurants')
 })
 
-// res.send('listing movies') 改成 res.render('index')
-// 傳入 restaurants
+// res.send('listing movies') 改成 res.render('index', { restaurants })
+// 透過 req.query 取得查詢字串
+// res.render('index', { restaurants }) 改成 res.render('index', { restaurants: matchedRestaurants, keyword })
+// 條件（三元）運算子 條件 ? 值1 : 值2
+// Object.value() 取得所有 property value，並以陣列回傳
+// Array.some() 檢查陣列裡是否符合條件，只要有一個元素符合條件即回傳 true
 app.get('/restaurants', (req, res) => {
-  res.render('index', { restaurants })
+  const keyword = req.query.keyword?.trim()
+  // console.log('keyword:', keyword)
+  const matchedRestaurants = keyword ? restaurants.filter((mv) => Object.values(mv).some((property) => {
+    if (typeof property === 'string') {
+      return property.toLowerCase().includes(keyword.toLowerCase())
+    }
+    return false
+  })
+  ) : restaurants
+  res.render('index', { restaurants: matchedRestaurants, keyword })
 })
 
 // 使用 params 做動態路由
-app.get('/restaurants/:id', (req, res) => {
+// find 取 id ，並數字轉文字(toString))
+// res.send(`read restaurant: ${id}`) 改成 res.render('detail', { restaurant })
+app.get('/restaurant/:id', (req, res) => {
   const id = req.params.id
-  res.send(`read restaurants: ${id}`)
+  const restaurant = restaurants.find((mv) => mv.id.toString() === id)
+  res.render('detail', { restaurant })
 })
 
 // 啟動並監聽 localhost 伺服器
